@@ -137,7 +137,7 @@ def plot_stat_bars(title: str, stats: dict, out_path: Path):
     plt.close(fig)
 
 
-def plot_hist(title: str, values: list[int], out_path: Path, xlabel: str):
+def plot_hist(title: str, values: list[int], out_path: Path, xlabel: str, show_percentiles: bool = False):
     if plt is None or not values:
         return
     fig, ax = plt.subplots(figsize=(6, 4))
@@ -148,8 +148,9 @@ def plot_hist(title: str, values: list[int], out_path: Path, xlabel: str):
     # Compute statistics
     avg = sum(values) / len(values)
     med = statistics.median(values)
+    p75 = statistics.quantiles(values, n=4, method="inclusive")[2] if len(values) > 0 else 0
 
-    # Ensure headroom for markers
+    # Ensure headroom for markers and top annotations
     y_max = float(max(n)) if len(n) else 1.0
     ax.set_ylim(0, y_max * 1.2)
 
@@ -163,12 +164,26 @@ def plot_hist(title: str, values: list[int], out_path: Path, xlabel: str):
                marker="D", facecolors="black", edgecolors="black",
                label=f"Median {med}")
 
+    # Optional percentile markers and percentage annotations
+    if show_percentiles:
+        for x in [p75]:
+            ax.axvline(x, color="black", linestyle="-.", linewidth=1, alpha=0.7)
+        # Percent of values less-or-equal than each percentile value (read left-to-right)
+        def pct_le(th: float) -> float:
+            if not values:
+                return 0.0
+            return round(100.0 * sum(1 for v in values if v <= th) / len(values), 1)
+        # Place small text labels slightly above histogram
+        ax.text(p75, y_max * 1.14, f"<=P75: {pct_le(p75)}%", ha="center", va="bottom", fontsize=8)
+
     ax.set_title(title)
     ax.set_ylabel("Frequency")
     ax.set_xlabel(xlabel)
     ax.grid(axis="y", linestyle=":", alpha=0.5)
     ax.legend(frameon=False, loc="upper right")
+    # Add extra top buffer
     fig.tight_layout()
+    fig.subplots_adjust(top=0.88)
     fig.savefig(out_path)
     plt.close(fig)
 
@@ -243,8 +258,8 @@ def main():
         plot_stat_bars("Prompt Sentences (Stats)", sani_stats["sents"], plots_dir / "sanitized_prompt_sentences_stats.png")
 
         # Histograms of distributions (titles omit dataset label)
-        plot_hist("Code Lines (Histogram)", code_line_counts, plots_dir / "sanitized_code_lines_hist.png", xlabel="Lines per file")
-        plot_hist("Prompt Characters (Histogram)", char_counts, plots_dir / "sanitized_prompt_characters_hist.png", xlabel="Characters per prompt")
+        plot_hist("Code Lines (Histogram)", code_line_counts, plots_dir / "sanitized_code_lines_hist.png", xlabel="Lines per file", show_percentiles=True)
+        plot_hist("Prompt Characters (Histogram)", char_counts, plots_dir / "sanitized_prompt_characters_hist.png", xlabel="Characters per prompt", show_percentiles=True)
         plot_hist("Prompt Words (Histogram)", word_counts, plots_dir / "sanitized_prompt_words_hist.png", xlabel="Words per prompt")
         plot_hist("Prompt Sentences (Histogram)", sent_counts, plots_dir / "sanitized_prompt_sentences_hist.png", xlabel="Sentences per prompt")
 
@@ -281,8 +296,8 @@ def main():
         plot_stat_bars("Prompt Sentences (Stats)", orig_stats["sents"], plots_dir / "original_prompt_sentences_stats.png")
 
         # Histograms of distributions (titles omit dataset label)
-        plot_hist("Code Lines (Histogram)", code_line_counts_o, plots_dir / "original_code_lines_hist.png", xlabel="Lines per file")
-        plot_hist("Prompt Characters (Histogram)", char_counts_o, plots_dir / "original_prompt_characters_hist.png", xlabel="Characters per prompt")
+        plot_hist("Code Lines (Histogram)", code_line_counts_o, plots_dir / "original_code_lines_hist.png", xlabel="Lines per file", show_percentiles=True)
+        plot_hist("Prompt Characters (Histogram)", char_counts_o, plots_dir / "original_prompt_characters_hist.png", xlabel="Characters per prompt", show_percentiles=True)
         plot_hist("Prompt Words (Histogram)", word_counts_o, plots_dir / "original_prompt_words_hist.png", xlabel="Words per prompt")
         plot_hist("Prompt Sentences (Histogram)", sent_counts_o, plots_dir / "original_prompt_sentences_hist.png", xlabel="Sentences per prompt")
 
