@@ -1,0 +1,1 @@
+Write a function to add two lists using map and lambda function.

@@ -1,0 +1,1 @@
+Write a function to find maximum of two numbers.

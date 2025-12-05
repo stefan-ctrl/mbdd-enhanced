@@ -1,0 +1,1 @@
+Write a function to find if the given number is a keith number or not.

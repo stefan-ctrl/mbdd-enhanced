@@ -1,0 +1,1 @@
+Write a python function to print negative numbers in a list.

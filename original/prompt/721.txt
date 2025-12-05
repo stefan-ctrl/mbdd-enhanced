@@ -1,0 +1,1 @@
+Write a function to find a path with the maximum average over all existing paths for the given square matrix of size n*n.

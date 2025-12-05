@@ -1,0 +1,1 @@
+Write a python function to find the minimun number of subsets with distinct elements.

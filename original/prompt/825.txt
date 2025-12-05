@@ -1,0 +1,1 @@
+Write a python function to access multiple elements of specified index from a given list.

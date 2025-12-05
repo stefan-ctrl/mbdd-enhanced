@@ -1,0 +1,1 @@
+Write a python function to check whether the product of digits of a number at even and odd places is equal or not.

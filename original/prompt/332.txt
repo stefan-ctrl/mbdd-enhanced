@@ -1,0 +1,1 @@
+Write a function to count character frequency of a given string.

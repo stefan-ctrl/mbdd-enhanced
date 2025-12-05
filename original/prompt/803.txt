@@ -1,0 +1,1 @@
+Write a python function to check whether the given number is a perfect square or not.

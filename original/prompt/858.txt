@@ -1,0 +1,1 @@
+Write a function to count number of lists in a given list of lists and square the count.

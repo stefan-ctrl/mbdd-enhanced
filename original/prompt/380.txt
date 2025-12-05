@@ -1,0 +1,1 @@
+Write a function to generate a two-dimensional array.

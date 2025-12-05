@@ -1,0 +1,1 @@
+Write a python function to add a minimum number such that the sum of array becomes even.

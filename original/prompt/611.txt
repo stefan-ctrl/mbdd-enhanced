@@ -1,0 +1,1 @@
+Write a function to find the maximum of nth column from the given tuple list.

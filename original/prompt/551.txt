@@ -1,0 +1,1 @@
+Write a function to extract a specified column from a given nested list.

@@ -1,0 +1,1 @@
+Write a function to find the maximum of similar indices in two lists of tuples.

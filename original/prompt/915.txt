@@ -1,0 +1,1 @@
+Write a function to rearrange positive and negative numbers in a given array using lambda function.

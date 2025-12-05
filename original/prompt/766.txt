@@ -1,0 +1,1 @@
+Write a function to iterate over all pairs of consecutive items in a given list.

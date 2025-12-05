@@ -1,0 +1,1 @@
+Write a function that gives profit amount if the given amount has profit else return none.

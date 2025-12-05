@@ -1,0 +1,1 @@
+Write a function to assign frequency to each tuple in the given tuple list.

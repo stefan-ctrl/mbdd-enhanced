@@ -1,0 +1,1 @@
+Write a function to find the nested list elements which are present in another list.

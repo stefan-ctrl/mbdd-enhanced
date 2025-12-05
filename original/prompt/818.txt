@@ -1,0 +1,1 @@
+Write a python function to count lower case letters in a given string.

@@ -1,0 +1,1 @@
+Write a function to count array elements having modular inverse under given prime number p equal to itself.

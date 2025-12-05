@@ -1,0 +1,1 @@
+Write a function to find the n - cheap price items from a given dataset using heap queue algorithm.

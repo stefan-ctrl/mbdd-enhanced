@@ -1,0 +1,1 @@
+Write a function to find the minimum total path sum in the given triangle.

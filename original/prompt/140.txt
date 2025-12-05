@@ -1,0 +1,1 @@
+Write a function to extract elements that occur singly in the given tuple list.

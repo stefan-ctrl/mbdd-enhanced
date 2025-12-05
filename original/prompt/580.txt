@@ -1,0 +1,1 @@
+Write a function to extract the even elements in the nested mixed tuple.

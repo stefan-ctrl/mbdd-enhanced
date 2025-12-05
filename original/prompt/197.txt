@@ -1,0 +1,1 @@
+Write a function to perform the exponentiation of the given two tuples.

@@ -1,0 +1,1 @@
+Write a function to calculate the number of digits and letters in a string.

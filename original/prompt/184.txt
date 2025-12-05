@@ -1,0 +1,1 @@
+Write a function to find all the values in a list that are greater than a specified number.

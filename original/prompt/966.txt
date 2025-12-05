@@ -1,0 +1,1 @@
+Write a function to remove an empty tuple from a list of tuples.

@@ -1,0 +1,1 @@
+Write a function to sort dictionary items by tuple product of keys for the given dictionary with tuple keys.

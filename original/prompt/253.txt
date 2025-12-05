@@ -1,0 +1,1 @@
+Write a python function to count integers from a given list.

@@ -1,0 +1,1 @@
+Write a python function to get the last element of each sublist.

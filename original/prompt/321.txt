@@ -1,0 +1,1 @@
+Write a function to find the demlo number for the given number.

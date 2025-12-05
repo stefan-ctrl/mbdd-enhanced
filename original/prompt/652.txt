@@ -1,0 +1,1 @@
+Write a function to flatten the given tuple matrix into the tuple list with each tuple representing each column.

@@ -1,0 +1,1 @@
+Write a function to find ln, m lobb number.

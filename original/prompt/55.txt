@@ -1,0 +1,1 @@
+Write a function to find t-nth term of geometric series.

@@ -1,0 +1,1 @@
+Write a function to sort the given array without using any sorting algorithm. the given array consists of only 0, 1, and 2.

@@ -1,0 +1,1 @@
+Write a function to find maximum possible sum of disjoint pairs for the given array of integers and a number k.

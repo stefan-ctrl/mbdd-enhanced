@@ -1,0 +1,1 @@
+Write a function to find the longest subsequence such that the difference between adjacents is one for the given array.

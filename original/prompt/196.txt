@@ -1,0 +1,1 @@
+Write a function to remove all the tuples with length k.

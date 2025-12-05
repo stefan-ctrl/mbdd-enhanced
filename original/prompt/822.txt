@@ -1,0 +1,1 @@
+Write a function to return true if the password is valid.

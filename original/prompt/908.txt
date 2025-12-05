@@ -1,0 +1,1 @@
+Write a function to find the fixed point in the given array.

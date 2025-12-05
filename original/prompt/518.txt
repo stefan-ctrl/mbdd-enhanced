@@ -1,0 +1,1 @@
+Write a function to find the square root of a perfect number.

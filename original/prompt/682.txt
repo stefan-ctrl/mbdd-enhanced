@@ -1,0 +1,1 @@
+Write a function to multiply two lists using map and lambda function.

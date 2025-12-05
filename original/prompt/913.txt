@@ -1,0 +1,1 @@
+Write a function to check for a number at the end of a string.

@@ -1,0 +1,1 @@
+Write a function to calculate the height of the given binary tree.

@@ -1,0 +1,1 @@
+Write a function to get an item of a tuple.

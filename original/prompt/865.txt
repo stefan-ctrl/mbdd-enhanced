@@ -1,0 +1,1 @@
+Write a function to print n-times a list using map function.

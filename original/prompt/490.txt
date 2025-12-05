@@ -1,0 +1,1 @@
+Write a function to extract all the pairs which are symmetric in the given tuple list.

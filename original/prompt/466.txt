@@ -1,0 +1,1 @@
+Write a function to find the peak element in the given array.

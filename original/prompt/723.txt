@@ -1,0 +1,1 @@
+Write a function to count the same pair in two given lists using map function.

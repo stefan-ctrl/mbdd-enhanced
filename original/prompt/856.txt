@@ -1,0 +1,1 @@
+Write a python function to find minimum adjacent swaps required to sort binary array.

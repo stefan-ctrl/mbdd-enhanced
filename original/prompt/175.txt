@@ -1,0 +1,1 @@
+Write a function to verify validity of a string of parentheses.

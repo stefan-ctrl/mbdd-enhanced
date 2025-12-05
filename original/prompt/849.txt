@@ -1,0 +1,1 @@
+Write a python function to find sum of all prime divisors of a given number.

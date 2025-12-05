@@ -1,0 +1,1 @@
+Write a function to perfom the rear element extraction from list of tuples records.

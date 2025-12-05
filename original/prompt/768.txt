@@ -1,0 +1,1 @@
+Write a python function to check for odd parity of a given number.

@@ -1,0 +1,1 @@
+Write a python function to check whether an array can be sorted or not by picking only the corner elements.

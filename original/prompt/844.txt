@@ -1,0 +1,1 @@
+Write a python function to find the kth element in an array containing odd elements first and then even elements.

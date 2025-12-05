@@ -1,0 +1,1 @@
+Write a function to extract every specified element from a given two dimensional list.

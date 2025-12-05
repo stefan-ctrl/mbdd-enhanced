@@ -1,0 +1,1 @@
+Write a python function to count occurences of a character in a repeated string.

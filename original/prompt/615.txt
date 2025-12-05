@@ -1,0 +1,1 @@
+Write a function to find average value of the numbers in a given tuple of tuples.

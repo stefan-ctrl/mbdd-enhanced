@@ -1,0 +1,1 @@
+Write a function to filter even numbers using lambda function.

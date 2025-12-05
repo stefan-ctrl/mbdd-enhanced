@@ -1,0 +1,1 @@
+Write a python function to count the pairs with xor as an odd number.

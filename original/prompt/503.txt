@@ -1,0 +1,1 @@
+Write a function to add consecutive numbers of a given list.

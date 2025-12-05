@@ -1,0 +1,1 @@
+Write a python function to choose points from two ranges such that no point lies in both the ranges.

@@ -1,0 +1,1 @@
+Write a function to find the smallest missing element in a sorted array.

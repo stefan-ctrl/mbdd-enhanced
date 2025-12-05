@@ -1,0 +1,1 @@
+Write a function to find the number of ways to fill it with 2 x 1 dominoes for the given 3 x n board.

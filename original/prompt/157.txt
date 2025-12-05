@@ -1,0 +1,1 @@
+Write a function to reflect the run-length encoding from a list.

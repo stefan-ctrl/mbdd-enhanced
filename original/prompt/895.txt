@@ -1,0 +1,1 @@
+Write a function to find the maximum sum of subsequences of given array with no adjacent elements.

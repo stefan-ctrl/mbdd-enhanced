@@ -1,0 +1,1 @@
+Write a function to find the occurrences of n most common words in a given text.

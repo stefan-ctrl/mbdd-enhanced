@@ -1,0 +1,1 @@
+Write a function to find the similar elements from the given two tuple lists.

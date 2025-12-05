@@ -1,0 +1,1 @@
+Write a function to find all five characters long word in the given string by using regex.

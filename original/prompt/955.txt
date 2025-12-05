@@ -1,0 +1,1 @@
+Write a function to find out, if the given number is abundant.

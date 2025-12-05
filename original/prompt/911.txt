@@ -1,0 +1,1 @@
+Write a function to compute maximum product of three numbers of a given array of integers using heap queue algorithm.

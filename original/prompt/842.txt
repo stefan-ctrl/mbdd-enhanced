@@ -1,0 +1,1 @@
+Write a function to find the number which occurs for odd number of times in the given array.

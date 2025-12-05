@@ -1,0 +1,1 @@
+Write a function to generate all sublists of a given list.

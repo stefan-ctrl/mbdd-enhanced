@@ -1,0 +1,1 @@
+Write a function to remove empty lists from a given list of lists.

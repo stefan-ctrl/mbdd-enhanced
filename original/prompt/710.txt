@@ -1,0 +1,1 @@
+Write a function to access the initial and last data of the given tuple record.

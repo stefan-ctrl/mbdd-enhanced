@@ -1,0 +1,1 @@
+Write a function to find the nth super ugly number from a given prime list of size k using heap queue algorithm.

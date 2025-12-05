@@ -1,0 +1,1 @@
+Write a python function to find the maximum element in a sorted and rotated array.

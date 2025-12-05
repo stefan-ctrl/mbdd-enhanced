@@ -1,0 +1,1 @@
+Write a function to extract unique values from the given dictionary values.

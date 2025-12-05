@@ -1,0 +1,1 @@
+Write a python function to find the average of even numbers till a given even number.

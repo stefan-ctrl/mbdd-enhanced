@@ -1,0 +1,1 @@
+Write a function to reverse each list in a given list of lists.

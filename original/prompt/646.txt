@@ -1,0 +1,1 @@
+Write a python function to count number of cubes of size k in a cube of size n.

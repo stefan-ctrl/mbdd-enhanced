@@ -1,0 +1,1 @@
+Write a python function to minimize the length of the string by removing occurrence of only one character.

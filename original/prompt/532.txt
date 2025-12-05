@@ -1,0 +1,1 @@
+Write a function to check if the two given strings are permutations of each other.

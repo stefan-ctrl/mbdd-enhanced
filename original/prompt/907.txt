@@ -1,0 +1,1 @@
+Write a function to print the first n lucky numbers.

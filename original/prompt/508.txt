@@ -1,0 +1,1 @@
+Write a function to check if the common elements between two given lists are in the same order or not.

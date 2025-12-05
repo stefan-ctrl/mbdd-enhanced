@@ -1,0 +1,1 @@
+Write a function to extract specified number of elements from a given list, which follow each other continuously.

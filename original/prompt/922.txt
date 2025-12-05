@@ -1,0 +1,1 @@
+Write a function to find a pair with the highest product from a given array of integers.

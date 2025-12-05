@@ -1,0 +1,1 @@
+Write a python function to capitalize first and last letters of each word of a given string.

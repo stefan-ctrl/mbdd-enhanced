@@ -1,0 +1,1 @@
+Write a function to find all pairs in an integer array whose sum is equal to a given number.

@@ -1,0 +1,1 @@
+Write a function to select the nth items of a list.

@@ -1,0 +1,1 @@
+Write a function to find numbers within a given range where every number is divisible by every digit it contains.

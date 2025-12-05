@@ -1,0 +1,1 @@
+Write a function to toggle characters case in a string.

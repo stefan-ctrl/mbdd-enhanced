@@ -1,0 +1,1 @@
+Write a python function to check whether the given number is odd or not using bitwise operator.

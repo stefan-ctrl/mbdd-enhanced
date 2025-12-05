@@ -1,0 +1,1 @@
+Write a function to find three closest elements from three sorted arrays.

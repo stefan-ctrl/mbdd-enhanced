@@ -1,0 +1,1 @@
+Write a function to find if there is a triplet in the array whose sum is equal to a given value.

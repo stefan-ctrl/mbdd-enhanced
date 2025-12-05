@@ -1,0 +1,1 @@
+Write a python function to check whether the given strings are rotations of each other or not.

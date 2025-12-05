@@ -1,0 +1,1 @@
+Write a function to multiply two integers without using the * operator in python.

@@ -1,0 +1,1 @@
+Write a function to move all the numbers in it to the given string.

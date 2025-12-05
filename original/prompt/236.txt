@@ -1,0 +1,1 @@
+Write a python function to count the maximum number of equilateral triangles that can be formed within a given equilateral triangle.

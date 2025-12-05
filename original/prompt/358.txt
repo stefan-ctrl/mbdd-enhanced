@@ -1,0 +1,1 @@
+Write a function to find modulo division of two lists using map and lambda function.

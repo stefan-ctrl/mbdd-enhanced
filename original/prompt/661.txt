@@ -1,0 +1,1 @@
+Write a function to find the maximum sum that can be formed which has no three consecutive elements present.

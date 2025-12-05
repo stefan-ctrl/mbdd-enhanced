@@ -1,0 +1,1 @@
+Write a function to count repeated items of a tuple.

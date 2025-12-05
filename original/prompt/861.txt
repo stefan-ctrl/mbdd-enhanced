@@ -1,0 +1,1 @@
+Write a function to find all anagrams of a string in a given list of strings using lambda function.

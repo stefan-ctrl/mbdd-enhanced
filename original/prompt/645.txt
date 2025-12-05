@@ -1,0 +1,1 @@
+Write a function to find the product of it’s kth index in the given tuples.

@@ -1,0 +1,1 @@
+Write a function to calculate wind chill index.

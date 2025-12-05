@@ -1,0 +1,1 @@
+Write a function to push all values into a heap and then pop off the smallest values one at a time.

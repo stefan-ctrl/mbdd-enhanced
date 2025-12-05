@@ -1,0 +1,1 @@
+Write a function to remove specific words from a given list.

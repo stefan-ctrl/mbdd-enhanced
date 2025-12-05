@@ -1,0 +1,1 @@
+Write a function to check if each element of the second tuple is greater than its corresponding index in the first tuple.

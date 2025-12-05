@@ -1,0 +1,1 @@
+Write a python function to find sum of prime numbers between 1 to n.

@@ -1,0 +1,1 @@
+Write a function to find whether an array is subset of another array.

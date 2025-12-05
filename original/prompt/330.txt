@@ -1,0 +1,1 @@
+Write a function to find all three, four, five characters long words in the given string by using regex.

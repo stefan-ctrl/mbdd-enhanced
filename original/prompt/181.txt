@@ -1,0 +1,1 @@
+Write a function to find the longest common prefix in the given set of strings.

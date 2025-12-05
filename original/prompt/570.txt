@@ -1,0 +1,1 @@
+Write a function to remove words from a given list of strings containing a character or string.

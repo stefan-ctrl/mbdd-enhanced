@@ -1,0 +1,1 @@
+Write a function to round the given number to the nearest multiple of a specific number.

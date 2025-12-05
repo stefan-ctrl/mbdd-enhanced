@@ -1,0 +1,1 @@
+Write a python function to toggle only first and last bits of a given number.

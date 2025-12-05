@@ -1,0 +1,1 @@
+Write a python function to check whether one root of the quadratic equation is twice of the other or not.

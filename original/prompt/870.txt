@@ -1,0 +1,1 @@
+Write a function to calculate the sum of the positive numbers of a given list of numbers using lambda function.

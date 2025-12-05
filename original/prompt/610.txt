@@ -1,0 +1,1 @@
+Write a python function to remove the k'th element from a given list.

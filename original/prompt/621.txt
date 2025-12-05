@@ -1,0 +1,1 @@
+Write a function to increment the numeric values in the given strings by k.

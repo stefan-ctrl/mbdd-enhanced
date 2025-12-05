@@ -1,0 +1,1 @@
+Write a function to check if any list element is present in the given list.

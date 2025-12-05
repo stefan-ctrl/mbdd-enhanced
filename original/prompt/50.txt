@@ -1,0 +1,1 @@
+Write a function to find the list with minimum length using lambda function.

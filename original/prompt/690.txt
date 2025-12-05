@@ -1,0 +1,1 @@
+Write a function to multiply consecutive numbers of a given list.

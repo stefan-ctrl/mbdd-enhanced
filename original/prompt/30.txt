@@ -1,0 +1,1 @@
+Write a python function to count all the substrings starting and ending with same characters.

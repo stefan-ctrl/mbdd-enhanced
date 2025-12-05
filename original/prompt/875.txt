@@ -1,0 +1,1 @@
+Write a function to find the minimum difference in the tuple pairs of given tuples.

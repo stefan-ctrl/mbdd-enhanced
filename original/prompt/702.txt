@@ -1,0 +1,1 @@
+Write a function to find the minimum number of elements that should be removed such that amax-amin<=k.

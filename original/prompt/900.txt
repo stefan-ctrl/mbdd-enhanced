@@ -1,0 +1,1 @@
+Write a function where a string will start with a specific number.

@@ -1,0 +1,1 @@
+Write a function to find frequency count of list of lists.

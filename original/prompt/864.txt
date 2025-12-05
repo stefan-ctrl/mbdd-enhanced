@@ -1,0 +1,1 @@
+Write a function to find palindromes in a given list of strings using lambda function.

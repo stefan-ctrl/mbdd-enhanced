@@ -1,0 +1,1 @@
+Write a function to check if the given array represents min heap or not.

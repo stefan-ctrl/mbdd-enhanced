@@ -1,0 +1,1 @@
+Write a function to count alphabets,digits and special charactes in a given string.

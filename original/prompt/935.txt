@@ -1,0 +1,1 @@
+Write a function to calculate the sum of series 1²+2²+3²+….+n².

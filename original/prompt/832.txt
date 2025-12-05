@@ -1,0 +1,1 @@
+Write a function to extract the maximum numeric value from a string by using regex.

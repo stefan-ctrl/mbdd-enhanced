@@ -1,0 +1,1 @@
+Write a function to group a sequence of key-value pairs into a dictionary of lists using collections module.

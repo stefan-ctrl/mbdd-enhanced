@@ -1,0 +1,1 @@
+Write a function to generate a square matrix filled with elements from 1 to n raised to the power of 2 in spiral order.

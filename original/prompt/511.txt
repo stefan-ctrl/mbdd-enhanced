@@ -1,0 +1,1 @@
+Write a python function to find minimum sum of factors of a given number.

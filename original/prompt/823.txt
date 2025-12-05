@@ -1,0 +1,1 @@
+Write a function to check if the given string starts with a substring using regex.

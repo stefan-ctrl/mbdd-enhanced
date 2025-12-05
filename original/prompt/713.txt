@@ -1,0 +1,1 @@
+Write a function to check if the given tuple contains all valid values or not.

@@ -1,0 +1,1 @@
+Write a function to find the most common elements and their counts of a specified text.

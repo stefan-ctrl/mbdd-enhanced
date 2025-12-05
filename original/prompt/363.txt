@@ -1,0 +1,1 @@
+Write a function to add the k elements to each element in the tuple.

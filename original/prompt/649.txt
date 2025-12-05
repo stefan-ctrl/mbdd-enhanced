@@ -1,0 +1,1 @@
+Write a python function to calculate the sum of the numbers in a list between the indices of a specified range.

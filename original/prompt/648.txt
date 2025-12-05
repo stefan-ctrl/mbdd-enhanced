@@ -1,0 +1,1 @@
+Write a function to exchange the position of every n-th value with (n+1)th value and (n+1)th value with n-th value in a given list.

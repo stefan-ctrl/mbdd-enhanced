@@ -1,0 +1,1 @@
+Write a function to find the sum of first even and odd number of a given list.

@@ -1,0 +1,1 @@
+Write a python function to print duplicants from a list of integers.

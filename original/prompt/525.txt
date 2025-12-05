@@ -1,0 +1,1 @@
+Write a python function to check whether two given lines are parallel or not.

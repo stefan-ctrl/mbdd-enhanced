@@ -1,0 +1,1 @@
+Write a function to re-arrange the given tuples based on the given ordered list.

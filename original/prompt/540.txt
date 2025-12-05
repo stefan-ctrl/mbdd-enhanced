@@ -1,0 +1,1 @@
+Write a python function to find the difference between highest and least frequencies in a given array.

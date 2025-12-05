@@ -1,0 +1,1 @@
+Write a function to sort a given mixed list of integers and strings.

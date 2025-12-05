@@ -1,0 +1,1 @@
+Write a function to calculate the sum of series 1³+2³+3³+….+n³.

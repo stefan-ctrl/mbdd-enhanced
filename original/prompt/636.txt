@@ -1,0 +1,1 @@
+Write a python function to check if roots of a quadratic equation are reciprocal of each other or not.
