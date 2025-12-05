@@ -22,7 +22,9 @@ What’s added:
 
 
 # Analysis
-Based on `analyse_mbpp.py`:
+Based on `analyse_mbpp.py`.
+
+For additional graphical presentation, take a look at [./plots](./plots)
 
 ## Original Summary
 | Metric | Count | Min | Median | Average | Max |
