@@ -1,6 +1,15 @@
 from pathlib import Path
 import re
 import statistics
+from typing import Optional, Tuple
+
+# Optional plotting support
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+except Exception:  # matplotlib not installed or headless issues
+    plt = None  # type: ignore
 
 
 def list_files(base: Path, subdir: str, ext: str):
@@ -24,8 +33,9 @@ def count_lines(text: str) -> int:
 
 
 def tokenize_words(text: str) -> list[str]:
-    # Split on word boundaries; include alphanumerics and underscore
-    return re.findall(r"[A-Za-z0-9_]+", text)
+    # Count natural language words (letters only, keep simple contractions like don't)
+    # This avoids counting numbers/underscores and aligns better with word metrics.
+    return re.findall(r"[A-Za-z]+(?:'[A-Za-z]+)?", text)
 
 
 def count_sentences(text: str) -> int:
@@ -104,6 +114,65 @@ def compare_stats(label_left: str, stats_left: dict, label_right: str, stats_rig
     print()
 
 
+def ensure_dir(p: Path):
+    p.mkdir(parents=True, exist_ok=True)
+
+
+def plot_stat_bars(title: str, stats: dict, out_path: Path):
+    if plt is None:
+        return
+    labels = ["Min", "Median", "Average", "Max"]
+    values = [stats["min"], stats["median"], stats["avg"], stats["max"]]
+    fig, ax = plt.subplots(figsize=(6, 4))
+    bars = ax.bar(labels, values, color="white", edgecolor="black")
+    # Apply distinct hatch patterns for monochrome clarity
+    hatches = ["///", "\\\\\\", "xxx", "---"]
+    for bar, hatch in zip(bars, hatches):
+        bar.set_hatch(hatch)
+    ax.set_title(title)
+    ax.set_ylabel("Value")
+    ax.grid(axis="y", linestyle=":", alpha=0.5)
+    fig.tight_layout()
+    fig.savefig(out_path)
+    plt.close(fig)
+
+
+def plot_hist(title: str, values: list[int], out_path: Path, xlabel: str):
+    if plt is None or not values:
+        return
+    fig, ax = plt.subplots(figsize=(6, 4))
+    n, bins, patches = ax.hist(
+        values, bins=30, color="0.85", edgecolor="0.25", alpha=1.0
+    )
+
+    # Compute statistics
+    avg = sum(values) / len(values)
+    med = statistics.median(values)
+
+    # Ensure headroom for markers
+    y_max = float(max(n)) if len(n) else 1.0
+    ax.set_ylim(0, y_max * 1.2)
+
+    # Highlight average and median as monochrome markers with distinct styles
+    ax.axvline(avg, color="black", linestyle="--", linewidth=1, alpha=0.7)
+    ax.axvline(med, color="black", linestyle=":", linewidth=1, alpha=0.7)
+    ax.scatter([avg], [y_max * 1.05], s=50, zorder=3,
+               marker="o", facecolors="white", edgecolors="black", linewidths=1.5,
+               label=f"Avg {avg:.2f}")
+    ax.scatter([med], [y_max * 1.1], s=50, zorder=3,
+               marker="D", facecolors="black", edgecolors="black",
+               label=f"Median {med}")
+
+    ax.set_title(title)
+    ax.set_ylabel("Frequency")
+    ax.set_xlabel(xlabel)
+    ax.grid(axis="y", linestyle=":", alpha=0.5)
+    ax.legend(frameon=False, loc="upper right")
+    fig.tight_layout()
+    fig.savefig(out_path)
+    plt.close(fig)
+
+
 def main():
     base = Path(__file__).parent
     sanitized = base / "sanitized"
@@ -144,6 +213,83 @@ def main():
         compare_stats("original", orig_stats["chars"], "sanitized", sani_stats["chars"], "Prompt characters")
         compare_stats("original", orig_stats["words"], "sanitized", sani_stats["words"], "Prompt words")
         compare_stats("original", orig_stats["sents"], "sanitized", sani_stats["sents"], "Prompt sentences")
+
+    # Plots for both datasets (if present)
+    if sanitized.exists():
+        # Recompute raw values for histograms
+        code_files = list_files(sanitized, "code", "py")
+        prompt_files = list_files(sanitized, "prompt", "txt")
+        code_line_counts = [count_lines(read_text(p)) for p in code_files]
+        prompt_texts = [read_text(p) for p in prompt_files]
+        char_counts = [len(t) for t in prompt_texts]
+        word_counts = [len(tokenize_words(t)) for t in prompt_texts]
+        sent_counts = [count_sentences(t) for t in prompt_texts]
+
+        plots_dir = Path(__file__).parent / "plots"
+        ensure_dir(plots_dir)
+
+        if sani_stats is None:
+            sani_stats = {
+                "code": describe(code_line_counts),
+                "chars": describe(char_counts),
+                "words": describe(word_counts),
+                "sents": describe(sent_counts),
+            }
+
+        # Bar charts of stats (titles omit dataset label; filenames indicate sanitized)
+        plot_stat_bars("Code Lines (Stats)", sani_stats["code"], plots_dir / "sanitized_code_lines_stats.png")
+        plot_stat_bars("Prompt Characters (Stats)", sani_stats["chars"], plots_dir / "sanitized_prompt_characters_stats.png")
+        plot_stat_bars("Prompt Words (Stats)", sani_stats["words"], plots_dir / "sanitized_prompt_words_stats.png")
+        plot_stat_bars("Prompt Sentences (Stats)", sani_stats["sents"], plots_dir / "sanitized_prompt_sentences_stats.png")
+
+        # Histograms of distributions (titles omit dataset label)
+        plot_hist("Code Lines (Histogram)", code_line_counts, plots_dir / "sanitized_code_lines_hist.png", xlabel="Lines per file")
+        plot_hist("Prompt Characters (Histogram)", char_counts, plots_dir / "sanitized_prompt_characters_hist.png", xlabel="Characters per prompt")
+        plot_hist("Prompt Words (Histogram)", word_counts, plots_dir / "sanitized_prompt_words_hist.png", xlabel="Words per prompt")
+        plot_hist("Prompt Sentences (Histogram)", sent_counts, plots_dir / "sanitized_prompt_sentences_hist.png", xlabel="Sentences per prompt")
+
+        if plt is None:
+            print("matplotlib not installed; skipped plot generation.")
+        else:
+            print(f"Saved plots to {plots_dir}")
+
+    if original.exists():
+        # Recompute raw values for histograms (original)
+        code_files_o = list_files(original, "code", "py")
+        prompt_files_o = list_files(original, "prompt", "txt")
+        code_line_counts_o = [count_lines(read_text(p)) for p in code_files_o]
+        prompt_texts_o = [read_text(p) for p in prompt_files_o]
+        char_counts_o = [len(t) for t in prompt_texts_o]
+        word_counts_o = [len(tokenize_words(t)) for t in prompt_texts_o]
+        sent_counts_o = [count_sentences(t) for t in prompt_texts_o]
+
+        plots_dir = Path(__file__).parent / "plots"
+        ensure_dir(plots_dir)
+
+        if orig_stats is None:
+            orig_stats = {
+                "code": describe(code_line_counts_o),
+                "chars": describe(char_counts_o),
+                "words": describe(word_counts_o),
+                "sents": describe(sent_counts_o),
+            }
+
+        # Bar charts of stats (titles omit dataset label; filenames indicate original)
+        plot_stat_bars("Code Lines (Stats)", orig_stats["code"], plots_dir / "original_code_lines_stats.png")
+        plot_stat_bars("Prompt Characters (Stats)", orig_stats["chars"], plots_dir / "original_prompt_characters_stats.png")
+        plot_stat_bars("Prompt Words (Stats)", orig_stats["words"], plots_dir / "original_prompt_words_stats.png")
+        plot_stat_bars("Prompt Sentences (Stats)", orig_stats["sents"], plots_dir / "original_prompt_sentences_stats.png")
+
+        # Histograms of distributions (titles omit dataset label)
+        plot_hist("Code Lines (Histogram)", code_line_counts_o, plots_dir / "original_code_lines_hist.png", xlabel="Lines per file")
+        plot_hist("Prompt Characters (Histogram)", char_counts_o, plots_dir / "original_prompt_characters_hist.png", xlabel="Characters per prompt")
+        plot_hist("Prompt Words (Histogram)", word_counts_o, plots_dir / "original_prompt_words_hist.png", xlabel="Words per prompt")
+        plot_hist("Prompt Sentences (Histogram)", sent_counts_o, plots_dir / "original_prompt_sentences_hist.png", xlabel="Sentences per prompt")
+
+        if plt is None:
+            print("matplotlib not installed; skipped plot generation.")
+        else:
+            print(f"Saved plots to {plots_dir}")
 
 
 if __name__ == "__main__":
