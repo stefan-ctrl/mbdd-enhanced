@@ -262,6 +262,11 @@ def main():
         plot_hist("Prompt Characters (Histogram)", char_counts, plots_dir / "sanitized_prompt_characters_hist.png", xlabel="Characters per prompt", show_percentiles=True)
         plot_hist("Prompt Words (Histogram)", word_counts, plots_dir / "sanitized_prompt_words_hist.png", xlabel="Words per prompt")
         plot_hist("Prompt Sentences (Histogram)", sent_counts, plots_dir / "sanitized_prompt_sentences_hist.png", xlabel="Sentences per prompt")
+        # Characters per code
+        code_files = list_files(sanitized, "code", "py")
+        code_texts = [read_text(p) for p in code_files]
+        code_char_counts = [len(t) for t in code_texts]
+        plot_hist("Characters per Code (Histogram)", code_char_counts, plots_dir / "sanitized_characters_per_code_hist.png", xlabel="Characters per code file")
 
         if plt is None:
             print("matplotlib not installed; skipped plot generation.")
@@ -300,6 +305,11 @@ def main():
         plot_hist("Prompt Characters (Histogram)", char_counts_o, plots_dir / "original_prompt_characters_hist.png", xlabel="Characters per prompt", show_percentiles=True)
         plot_hist("Prompt Words (Histogram)", word_counts_o, plots_dir / "original_prompt_words_hist.png", xlabel="Words per prompt")
         plot_hist("Prompt Sentences (Histogram)", sent_counts_o, plots_dir / "original_prompt_sentences_hist.png", xlabel="Sentences per prompt")
+        # Characters per code
+        code_files_o = list_files(original, "code", "py")
+        code_texts_o = [read_text(p) for p in code_files_o]
+        code_char_counts_o = [len(t) for t in code_texts_o]
+        plot_hist("Characters per Code (Histogram)", code_char_counts_o, plots_dir / "original_characters_per_code_hist.png", xlabel="Characters per code file")
 
         if plt is None:
             print("matplotlib not installed; skipped plot generation.")
