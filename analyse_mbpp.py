@@ -267,6 +267,12 @@ def main():
         code_texts = [read_text(p) for p in code_files]
         code_char_counts = [len(t) for t in code_texts]
         plot_hist("Characters per Code (Histogram)", code_char_counts, plots_dir / "sanitized_characters_per_code_hist.png", xlabel="Characters per code file")
+        # Characters per line in code
+        code_chars_per_line = []
+        for text in code_texts:
+            lines = text.rstrip("\n").split("\n") if text else []
+            code_chars_per_line.extend([len(line) for line in lines])
+        plot_hist("Characters per Line (Histogram)", code_chars_per_line, plots_dir / "sanitized_characters_per_line_hist.png", xlabel="Characters per line")
 
         if plt is None:
             print("matplotlib not installed; skipped plot generation.")
@@ -310,6 +316,12 @@ def main():
         code_texts_o = [read_text(p) for p in code_files_o]
         code_char_counts_o = [len(t) for t in code_texts_o]
         plot_hist("Characters per Code (Histogram)", code_char_counts_o, plots_dir / "original_characters_per_code_hist.png", xlabel="Characters per code file")
+        # Characters per line in code
+        code_chars_per_line_o = []
+        for text in code_texts_o:
+            lines = text.rstrip("\n").split("\n") if text else []
+            code_chars_per_line_o.extend([len(line) for line in lines])
+        plot_hist("Characters per Line (Histogram)", code_chars_per_line_o, plots_dir / "original_characters_per_line_hist.png", xlabel="Characters per line")
 
         if plt is None:
             print("matplotlib not installed; skipped plot generation.")
