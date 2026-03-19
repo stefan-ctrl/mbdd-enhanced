@@ -1,0 +1,15 @@
+# Configuration file for LLM benchmark
+energy_benchmarks: 1000
+sample_size: 1000
+langchain: NORAG
+dataset: mbpp-sanitized
+
+# List of LLM models to benchmark
+llm_models:
+  - "gemma3:270m"
+  - "gemma3:12b"
+  - "qwen:0.5b"
+
+# Optional experimental features
+experimental:
+  use_efficiency_rag: true

@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import re
 import statistics
 from typing import Optional, Tuple
@@ -32,10 +33,21 @@ def count_lines(text: str) -> int:
     return text.rstrip("\n").count("\n") + 1
 
 
-def tokenize_words(text: str) -> list[str]:
-    # Count natural language words (letters only, keep simple contractions like don't)
-    # This avoids counting numbers/underscores and aligns better with word metrics.
-    return re.findall(r"[A-Za-z]+(?:'[A-Za-z]+)?", text)
+_tiktoken_encoding = None
+
+
+def _get_encoding():
+    global _tiktoken_encoding
+    if _tiktoken_encoding is None:
+        import tiktoken
+        _tiktoken_encoding = tiktoken.get_encoding("cl100k_base")
+    return _tiktoken_encoding
+
+
+def count_tokens(text: str) -> int:
+    if not text:
+        return 0
+    return len(_get_encoding().encode(text))
 
 
 def count_sentences(text: str) -> int:
@@ -67,14 +79,14 @@ def analyse_dataset(label: str, root: Path):
 
     prompt_texts = [read_text(p) for p in prompt_files]
     prompt_char_counts = [len(t) for t in prompt_texts]
-    prompt_word_counts = [len(tokenize_words(t)) for t in prompt_texts]
+    prompt_word_counts = [count_tokens(t) for t in prompt_texts]
     prompt_sentence_counts = [count_sentences(t) for t in prompt_texts]
 
     # Raw output
     print(f"Dataset: {label}")
     print("- Code lines:", describe(code_line_counts))
     print("- Prompt characters:", describe(prompt_char_counts))
-    print("- Prompt words:", describe(prompt_word_counts))
+    print("- Prompt tokens:", describe(prompt_word_counts))
     print("- Prompt sentences:", describe(prompt_sentence_counts))
     print()
 
@@ -94,7 +106,7 @@ def analyse_dataset(label: str, root: Path):
         f"| Prompt characters | {char_stats['count']} | {char_stats['min']} | {char_stats['median']} | {char_stats['avg']} | {char_stats['max']} |"
     )
     print(
-        f"| Prompt words | {word_stats['count']} | {word_stats['min']} | {word_stats['median']} | {word_stats['avg']} | {word_stats['max']} |"
+        f"| Prompt tokens | {word_stats['count']} | {word_stats['min']} | {word_stats['median']} | {word_stats['avg']} | {word_stats['max']} |"
     )
     print(
         f"| Prompt sentences | {sent_stats['count']} | {sent_stats['min']} | {sent_stats['median']} | {sent_stats['avg']} | {sent_stats['max']} |"
@@ -188,6 +200,11 @@ def plot_hist(title: str, values: list[int], out_path: Path, xlabel: str, show_p
     plt.close(fig)
 
 
+def export_json(data: dict, out_path: Path):
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
 def main():
     base = Path(__file__).parent
     sanitized = base / "sanitized"
@@ -200,7 +217,7 @@ def main():
         code_line_counts = [count_lines(read_text(p)) for p in code_files]
         prompt_texts = [read_text(p) for p in prompt_files]
         char_counts = [len(t) for t in prompt_texts]
-        word_counts = [len(tokenize_words(t)) for t in prompt_texts]
+        word_counts = [count_tokens(t) for t in prompt_texts]
         sent_counts = [count_sentences(t) for t in prompt_texts]
         return {
             "code": describe(code_line_counts),
@@ -226,7 +243,7 @@ def main():
     if orig_stats is not None and sani_stats is not None:
         compare_stats("original", orig_stats["code"], "sanitized", sani_stats["code"], "Code lines")
         compare_stats("original", orig_stats["chars"], "sanitized", sani_stats["chars"], "Prompt characters")
-        compare_stats("original", orig_stats["words"], "sanitized", sani_stats["words"], "Prompt words")
+        compare_stats("original", orig_stats["words"], "sanitized", sani_stats["words"], "Prompt tokens")
         compare_stats("original", orig_stats["sents"], "sanitized", sani_stats["sents"], "Prompt sentences")
 
     # Plots for both datasets (if present)
@@ -237,7 +254,7 @@ def main():
         code_line_counts = [count_lines(read_text(p)) for p in code_files]
         prompt_texts = [read_text(p) for p in prompt_files]
         char_counts = [len(t) for t in prompt_texts]
-        word_counts = [len(tokenize_words(t)) for t in prompt_texts]
+        word_counts = [count_tokens(t) for t in prompt_texts]
         sent_counts = [count_sentences(t) for t in prompt_texts]
 
         plots_dir = Path(__file__).parent / "plots"
@@ -254,13 +271,13 @@ def main():
         # Bar charts of stats (titles omit dataset label; filenames indicate sanitized)
         plot_stat_bars("Code Lines (Stats)", sani_stats["code"], plots_dir / "sanitized_code_lines_stats.png")
         plot_stat_bars("Prompt Characters (Stats)", sani_stats["chars"], plots_dir / "sanitized_prompt_characters_stats.png")
-        plot_stat_bars("Prompt Words (Stats)", sani_stats["words"], plots_dir / "sanitized_prompt_words_stats.png")
+        plot_stat_bars("Prompt Tokens (Stats)", sani_stats["words"], plots_dir / "sanitized_prompt_tokens_stats.png")
         plot_stat_bars("Prompt Sentences (Stats)", sani_stats["sents"], plots_dir / "sanitized_prompt_sentences_stats.png")
 
         # Histograms of distributions (titles omit dataset label)
         plot_hist("Code Lines (Histogram)", code_line_counts, plots_dir / "sanitized_code_lines_hist.png", xlabel="Lines per file", show_percentiles=True)
         plot_hist("Prompt Characters (Histogram)", char_counts, plots_dir / "sanitized_prompt_characters_hist.png", xlabel="Characters per prompt", show_percentiles=True)
-        plot_hist("Prompt Words (Histogram)", word_counts, plots_dir / "sanitized_prompt_words_hist.png", xlabel="Words per prompt")
+        plot_hist("Prompt Tokens (Histogram)", word_counts, plots_dir / "sanitized_prompt_tokens_hist.png", xlabel="Tokens per prompt")
         plot_hist("Prompt Sentences (Histogram)", sent_counts, plots_dir / "sanitized_prompt_sentences_hist.png", xlabel="Sentences per prompt")
         # Characters per code
         code_files = list_files(sanitized, "code", "py")
@@ -286,7 +303,7 @@ def main():
         code_line_counts_o = [count_lines(read_text(p)) for p in code_files_o]
         prompt_texts_o = [read_text(p) for p in prompt_files_o]
         char_counts_o = [len(t) for t in prompt_texts_o]
-        word_counts_o = [len(tokenize_words(t)) for t in prompt_texts_o]
+        word_counts_o = [count_tokens(t) for t in prompt_texts_o]
         sent_counts_o = [count_sentences(t) for t in prompt_texts_o]
 
         plots_dir = Path(__file__).parent / "plots"
@@ -303,13 +320,13 @@ def main():
         # Bar charts of stats (titles omit dataset label; filenames indicate original)
         plot_stat_bars("Code Lines (Stats)", orig_stats["code"], plots_dir / "original_code_lines_stats.png")
         plot_stat_bars("Prompt Characters (Stats)", orig_stats["chars"], plots_dir / "original_prompt_characters_stats.png")
-        plot_stat_bars("Prompt Words (Stats)", orig_stats["words"], plots_dir / "original_prompt_words_stats.png")
+        plot_stat_bars("Prompt Tokens (Stats)", orig_stats["words"], plots_dir / "original_prompt_tokens_stats.png")
         plot_stat_bars("Prompt Sentences (Stats)", orig_stats["sents"], plots_dir / "original_prompt_sentences_stats.png")
 
         # Histograms of distributions (titles omit dataset label)
         plot_hist("Code Lines (Histogram)", code_line_counts_o, plots_dir / "original_code_lines_hist.png", xlabel="Lines per file", show_percentiles=True)
         plot_hist("Prompt Characters (Histogram)", char_counts_o, plots_dir / "original_prompt_characters_hist.png", xlabel="Characters per prompt", show_percentiles=True)
-        plot_hist("Prompt Words (Histogram)", word_counts_o, plots_dir / "original_prompt_words_hist.png", xlabel="Words per prompt")
+        plot_hist("Prompt Tokens (Histogram)", word_counts_o, plots_dir / "original_prompt_tokens_hist.png", xlabel="Tokens per prompt")
         plot_hist("Prompt Sentences (Histogram)", sent_counts_o, plots_dir / "original_prompt_sentences_hist.png", xlabel="Sentences per prompt")
         # Characters per code
         code_files_o = list_files(original, "code", "py")
@@ -327,6 +344,58 @@ def main():
             print("matplotlib not installed; skipped plot generation.")
         else:
             print(f"Saved plots to {plots_dir}")
+
+
+    # Collect raw per-file values for JSON export
+    def collect_raw(root: Path):
+        code_files = list_files(root, "code", "py")
+        prompt_files = list_files(root, "prompt", "txt")
+        code_texts = [read_text(p) for p in code_files]
+        prompt_texts = [read_text(p) for p in prompt_files]
+        code_line_counts = [count_lines(t) for t in code_texts]
+        code_char_counts = [len(t) for t in code_texts]
+        code_chars_per_line = []
+        for t in code_texts:
+            lines = t.rstrip("\n").split("\n") if t else []
+            code_chars_per_line.extend([len(l) for l in lines])
+        char_counts = [len(t) for t in prompt_texts]
+        token_counts = [count_tokens(t) for t in prompt_texts]
+        sent_counts = [count_sentences(t) for t in prompt_texts]
+        return {
+            "code_lines": code_line_counts,
+            "code_characters": code_char_counts,
+            "code_characters_per_line": code_chars_per_line,
+            "prompt_characters": char_counts,
+            "prompt_tokens": token_counts,
+            "prompt_sentences": sent_counts,
+        }
+
+    # Export JSON
+    plots_dir = Path(__file__).parent / "plots"
+    ensure_dir(plots_dir)
+
+    json_output = {
+        "tokenization": {
+            "method": "tiktoken",
+            "encoding": "cl100k_base",
+        },
+    }
+    if original.exists():
+        raw_orig = collect_raw(original)
+        json_output["original"] = {
+            "raw": raw_orig,
+            "stats": {k: describe(v) for k, v in raw_orig.items()},
+        }
+    if sanitized.exists():
+        raw_sani = collect_raw(sanitized)
+        json_output["sanitized"] = {
+            "raw": raw_sani,
+            "stats": {k: describe(v) for k, v in raw_sani.items()},
+        }
+
+    json_path = plots_dir / "analysis.json"
+    export_json(json_output, json_path)
+    print(f"Exported JSON to {json_path}")
 
 
 if __name__ == "__main__":
