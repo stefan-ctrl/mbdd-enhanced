@@ -354,6 +354,7 @@ def main():
         prompt_texts = [read_text(p) for p in prompt_files]
         code_line_counts = [count_lines(t) for t in code_texts]
         code_char_counts = [len(t) for t in code_texts]
+        code_token_counts = [count_tokens(t) for t in code_texts]
         code_chars_per_line = []
         for t in code_texts:
             lines = t.rstrip("\n").split("\n") if t else []
@@ -364,6 +365,7 @@ def main():
         return {
             "code_lines": code_line_counts,
             "code_characters": code_char_counts,
+            "code_tokens": code_token_counts,
             "code_characters_per_line": code_chars_per_line,
             "prompt_characters": char_counts,
             "prompt_tokens": token_counts,
