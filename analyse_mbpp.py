@@ -61,13 +61,33 @@ def count_sentences(text: str) -> int:
 
 def describe(values: list[int]) -> dict:
     if not values:
-        return {"avg": 0, "median": 0, "min": 0, "max": 0, "count": 0}
+        return {"avg": 0, "median": 0, "min": 0, "max": 0, "count": 0,
+                "std": 0, "q1": 0, "q3": 0, "iqr": 0,
+                "whisker_low": 0, "whisker_high": 0, "outliers": []}
+    avg = round(sum(values) / len(values), 2)
+    med = statistics.median(values)
+    std = round(statistics.stdev(values), 2) if len(values) > 1 else 0
+    q1, q2, q3 = statistics.quantiles(values, n=4, method="inclusive") if len(values) >= 2 else (med, med, med)
+    iqr = round(q3 - q1, 2)
+    whisker_low = q1 - 1.5 * iqr
+    whisker_high = q3 + 1.5 * iqr
+    # Clamp whiskers to actual data range
+    actual_low = min(v for v in values if v >= whisker_low) if any(v >= whisker_low for v in values) else min(values)
+    actual_high = max(v for v in values if v <= whisker_high) if any(v <= whisker_high for v in values) else max(values)
+    outliers = sorted(v for v in values if v < whisker_low or v > whisker_high)
     return {
-        "avg": round(sum(values) / len(values), 2),
-        "median": statistics.median(values),
+        "avg": avg,
+        "median": med,
         "min": min(values),
         "max": max(values),
         "count": len(values),
+        "std": std,
+        "q1": q1,
+        "q3": q3,
+        "iqr": iqr,
+        "whisker_low": actual_low,
+        "whisker_high": actual_high,
+        "outliers": outliers,
     }
 
 
