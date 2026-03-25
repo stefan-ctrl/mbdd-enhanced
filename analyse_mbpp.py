@@ -95,7 +95,14 @@ def analyse_dataset(label: str, root: Path):
     code_files = list_files(root, "code", "py")
     prompt_files = list_files(root, "prompt", "txt")
 
-    code_line_counts = [count_lines(read_text(p)) for p in code_files]
+    code_texts = [read_text(p) for p in code_files]
+    code_line_counts = [count_lines(t) for t in code_texts]
+    code_char_counts = [len(t) for t in code_texts]
+    code_token_counts = [count_tokens(t) for t in code_texts]
+    code_chars_per_line = []
+    for t in code_texts:
+        lines = t.rstrip("\n").split("\n") if t else []
+        code_chars_per_line.extend([len(line) for line in lines])
 
     prompt_texts = [read_text(p) for p in prompt_files]
     prompt_char_counts = [len(t) for t in prompt_texts]
@@ -105,13 +112,19 @@ def analyse_dataset(label: str, root: Path):
     # Raw output
     print(f"Dataset: {label}")
     print("- Code lines:", describe(code_line_counts))
+    print("- Code characters:", describe(code_char_counts))
+    print("- Code tokens:", describe(code_token_counts))
+    print("- Code characters per line:", describe(code_chars_per_line))
     print("- Prompt characters:", describe(prompt_char_counts))
     print("- Prompt tokens:", describe(prompt_word_counts))
     print("- Prompt sentences:", describe(prompt_sentence_counts))
     print()
 
     # Markdown table output
-    code_stats = describe(code_line_counts)
+    code_line_stats = describe(code_line_counts)
+    code_char_stats = describe(code_char_counts)
+    code_token_stats = describe(code_token_counts)
+    code_cpl_stats = describe(code_chars_per_line)
     char_stats = describe(prompt_char_counts)
     word_stats = describe(prompt_word_counts)
     sent_stats = describe(prompt_sentence_counts)
@@ -120,7 +133,16 @@ def analyse_dataset(label: str, root: Path):
     print("| Metric | Count | Min | Median | Average | Max |")
     print("|---|---:|---:|---:|---:|---:|")
     print(
-        f"| Code lines | {code_stats['count']} | {code_stats['min']} | {code_stats['median']} | {code_stats['avg']} | {code_stats['max']} |"
+        f"| Code lines | {code_line_stats['count']} | {code_line_stats['min']} | {code_line_stats['median']} | {code_line_stats['avg']} | {code_line_stats['max']} |"
+    )
+    print(
+        f"| Code characters | {code_char_stats['count']} | {code_char_stats['min']} | {code_char_stats['median']} | {code_char_stats['avg']} | {code_char_stats['max']} |"
+    )
+    print(
+        f"| Code tokens | {code_token_stats['count']} | {code_token_stats['min']} | {code_token_stats['median']} | {code_token_stats['avg']} | {code_token_stats['max']} |"
+    )
+    print(
+        f"| Code chars/line | {code_cpl_stats['count']} | {code_cpl_stats['min']} | {code_cpl_stats['median']} | {code_cpl_stats['avg']} | {code_cpl_stats['max']} |"
     )
     print(
         f"| Prompt characters | {char_stats['count']} | {char_stats['min']} | {char_stats['median']} | {char_stats['avg']} | {char_stats['max']} |"
@@ -140,9 +162,16 @@ def compare_stats(label_left: str, stats_left: dict, label_right: str, stats_rig
     print("|---|---|---|")
     print(f"| Count | {stats_left['count']} | {stats_right['count']} |")
     print(f"| Min | {stats_left['min']} | {stats_right['min']} |")
+    print(f"| Q1 | {stats_left['q1']} | {stats_right['q1']} |")
     print(f"| Median | {stats_left['median']} | {stats_right['median']} |")
     print(f"| Average | {stats_left['avg']} | {stats_right['avg']} |")
+    print(f"| Q3 | {stats_left['q3']} | {stats_right['q3']} |")
     print(f"| Max | {stats_left['max']} | {stats_right['max']} |")
+    print(f"| Std | {stats_left['std']} | {stats_right['std']} |")
+    print(f"| IQR | {stats_left['iqr']} | {stats_right['iqr']} |")
+    print(f"| Whisker Low | {stats_left['whisker_low']} | {stats_right['whisker_low']} |")
+    print(f"| Whisker High | {stats_left['whisker_high']} | {stats_right['whisker_high']} |")
+    print(f"| Outliers | {len(stats_left['outliers'])} | {len(stats_right['outliers'])} |")
     print()
 
 
@@ -234,13 +263,23 @@ def main():
     def collect(root: Path):
         code_files = list_files(root, "code", "py")
         prompt_files = list_files(root, "prompt", "txt")
-        code_line_counts = [count_lines(read_text(p)) for p in code_files]
+        code_texts = [read_text(p) for p in code_files]
+        code_line_counts = [count_lines(t) for t in code_texts]
+        code_char_counts = [len(t) for t in code_texts]
+        code_token_counts = [count_tokens(t) for t in code_texts]
+        code_chars_per_line = []
+        for t in code_texts:
+            lines = t.rstrip("\n").split("\n") if t else []
+            code_chars_per_line.extend([len(line) for line in lines])
         prompt_texts = [read_text(p) for p in prompt_files]
         char_counts = [len(t) for t in prompt_texts]
         word_counts = [count_tokens(t) for t in prompt_texts]
         sent_counts = [count_sentences(t) for t in prompt_texts]
         return {
-            "code": describe(code_line_counts),
+            "code_lines": describe(code_line_counts),
+            "code_chars": describe(code_char_counts),
+            "code_tokens": describe(code_token_counts),
+            "code_cpl": describe(code_chars_per_line),
             "chars": describe(char_counts),
             "words": describe(word_counts),
             "sents": describe(sent_counts),
@@ -261,7 +300,10 @@ def main():
 
     # Comparison tables: four tables for code lines, prompt chars, words, sentences
     if orig_stats is not None and sani_stats is not None:
-        compare_stats("original", orig_stats["code"], "sanitized", sani_stats["code"], "Code lines")
+        compare_stats("original", orig_stats["code_lines"], "sanitized", sani_stats["code_lines"], "Code lines")
+        compare_stats("original", orig_stats["code_chars"], "sanitized", sani_stats["code_chars"], "Code characters")
+        compare_stats("original", orig_stats["code_tokens"], "sanitized", sani_stats["code_tokens"], "Code tokens")
+        compare_stats("original", orig_stats["code_cpl"], "sanitized", sani_stats["code_cpl"], "Code characters per line")
         compare_stats("original", orig_stats["chars"], "sanitized", sani_stats["chars"], "Prompt characters")
         compare_stats("original", orig_stats["words"], "sanitized", sani_stats["words"], "Prompt tokens")
         compare_stats("original", orig_stats["sents"], "sanitized", sani_stats["sents"], "Prompt sentences")
@@ -281,15 +323,25 @@ def main():
         ensure_dir(plots_dir)
 
         if sani_stats is None:
+            code_texts = [read_text(p) for p in code_files]
+            code_char_counts = [len(t) for t in code_texts]
+            code_token_counts = [count_tokens(t) for t in code_texts]
+            code_chars_per_line = []
+            for t in code_texts:
+                lines = t.rstrip("\n").split("\n") if t else []
+                code_chars_per_line.extend([len(line) for line in lines])
             sani_stats = {
-                "code": describe(code_line_counts),
+                "code_lines": describe(code_line_counts),
+                "code_chars": describe(code_char_counts),
+                "code_tokens": describe(code_token_counts),
+                "code_cpl": describe(code_chars_per_line),
                 "chars": describe(char_counts),
                 "words": describe(word_counts),
                 "sents": describe(sent_counts),
             }
 
         # Bar charts of stats (titles omit dataset label; filenames indicate sanitized)
-        plot_stat_bars("Code Lines (Stats)", sani_stats["code"], plots_dir / "sanitized_code_lines_stats.png")
+        plot_stat_bars("Code Lines (Stats)", sani_stats["code_lines"], plots_dir / "sanitized_code_lines_stats.png")
         plot_stat_bars("Prompt Characters (Stats)", sani_stats["chars"], plots_dir / "sanitized_prompt_characters_stats.png")
         plot_stat_bars("Prompt Tokens (Stats)", sani_stats["words"], plots_dir / "sanitized_prompt_tokens_stats.png")
         plot_stat_bars("Prompt Sentences (Stats)", sani_stats["sents"], plots_dir / "sanitized_prompt_sentences_stats.png")
@@ -330,15 +382,25 @@ def main():
         ensure_dir(plots_dir)
 
         if orig_stats is None:
+            code_texts_o = [read_text(p) for p in code_files_o]
+            code_char_counts_o = [len(t) for t in code_texts_o]
+            code_token_counts_o = [count_tokens(t) for t in code_texts_o]
+            code_chars_per_line_o = []
+            for t in code_texts_o:
+                lines = t.rstrip("\n").split("\n") if t else []
+                code_chars_per_line_o.extend([len(line) for line in lines])
             orig_stats = {
-                "code": describe(code_line_counts_o),
+                "code_lines": describe(code_line_counts_o),
+                "code_chars": describe(code_char_counts_o),
+                "code_tokens": describe(code_token_counts_o),
+                "code_cpl": describe(code_chars_per_line_o),
                 "chars": describe(char_counts_o),
                 "words": describe(word_counts_o),
                 "sents": describe(sent_counts_o),
             }
 
         # Bar charts of stats (titles omit dataset label; filenames indicate original)
-        plot_stat_bars("Code Lines (Stats)", orig_stats["code"], plots_dir / "original_code_lines_stats.png")
+        plot_stat_bars("Code Lines (Stats)", orig_stats["code_lines"], plots_dir / "original_code_lines_stats.png")
         plot_stat_bars("Prompt Characters (Stats)", orig_stats["chars"], plots_dir / "original_prompt_characters_stats.png")
         plot_stat_bars("Prompt Tokens (Stats)", orig_stats["words"], plots_dir / "original_prompt_tokens_stats.png")
         plot_stat_bars("Prompt Sentences (Stats)", orig_stats["sents"], plots_dir / "original_prompt_sentences_stats.png")
@@ -376,13 +438,19 @@ def main():
         code_char_counts = [len(t) for t in code_texts]
         code_token_counts = [count_tokens(t) for t in code_texts]
         code_chars_per_line = []
-        for t in code_texts:
+        code_chars_per_line_files = []
+        for p, t in zip(code_files, code_texts):
             lines = t.rstrip("\n").split("\n") if t else []
             code_chars_per_line.extend([len(l) for l in lines])
+            code_chars_per_line_files.extend([p.stem for _ in lines])
         char_counts = [len(t) for t in prompt_texts]
         token_counts = [count_tokens(t) for t in prompt_texts]
         sent_counts = [count_sentences(t) for t in prompt_texts]
-        return {
+
+        code_names = [p.stem for p in code_files]
+        prompt_names = [p.stem for p in prompt_files]
+
+        raw = {
             "code_lines": code_line_counts,
             "code_characters": code_char_counts,
             "code_tokens": code_token_counts,
@@ -391,6 +459,34 @@ def main():
             "prompt_tokens": token_counts,
             "prompt_sentences": sent_counts,
         }
+        files = {
+            "code_lines": code_names,
+            "code_characters": code_names,
+            "code_tokens": code_names,
+            "code_characters_per_line": code_chars_per_line_files,
+            "prompt_characters": prompt_names,
+            "prompt_tokens": prompt_names,
+            "prompt_sentences": prompt_names,
+        }
+        return raw, files
+
+    def describe_with_files(values, file_names):
+        """Like describe() but enriches outliers with file names."""
+        stats = describe(values)
+        if not values or not file_names or len(values) < 2:
+            stats["outliers"] = []
+            return stats
+        q1 = stats["q1"]
+        q3 = stats["q3"]
+        iqr = stats["iqr"]
+        low_thresh = q1 - 1.5 * iqr
+        high_thresh = q3 + 1.5 * iqr
+        outlier_details = []
+        for v, f in zip(values, file_names):
+            if v < low_thresh or v > high_thresh:
+                outlier_details.append({"file": f, "value": v})
+        stats["outliers"] = sorted(outlier_details, key=lambda x: x["value"])
+        return stats
 
     # Export JSON
     plots_dir = Path(__file__).parent / "plots"
@@ -403,16 +499,16 @@ def main():
         },
     }
     if original.exists():
-        raw_orig = collect_raw(original)
+        raw_orig, files_orig = collect_raw(original)
         json_output["original"] = {
             "raw": raw_orig,
-            "stats": {k: describe(v) for k, v in raw_orig.items()},
+            "stats": {k: describe_with_files(v, files_orig[k]) for k, v in raw_orig.items()},
         }
     if sanitized.exists():
-        raw_sani = collect_raw(sanitized)
+        raw_sani, files_sani = collect_raw(sanitized)
         json_output["sanitized"] = {
             "raw": raw_sani,
-            "stats": {k: describe(v) for k, v in raw_sani.items()},
+            "stats": {k: describe_with_files(v, files_sani[k]) for k, v in raw_sani.items()},
         }
 
     json_path = plots_dir / "analysis.json"
